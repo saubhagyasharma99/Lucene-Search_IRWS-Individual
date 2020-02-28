@@ -14,8 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * The base source code was modified for my submission of the individual assignment
- * for the module 'Information Retrieval and Web Search (CS7IS3)' in Trinity College Dublin"
+ * The base source code from the Apache website was modified as part of my submission for
+ * the module 'Information Retrieval and Web Search (CS7IS3)' in Trinity College Dublin
  */
 
 import java.io.BufferedReader;
@@ -29,8 +29,10 @@ import java.nio.file.Paths;
 import java.util.Date;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.en.EnglishAnalyzer;
+import org.apache.lucene.analysis.core.SimpleAnalyzer;
+import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
@@ -38,7 +40,7 @@ import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.search.similarities.BM25Similarity;
+import org.apache.lucene.search.similarities.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
@@ -54,7 +56,7 @@ public class Indexer {
         final Path docDir = Paths.get(docsPath);
 
         if (!Files.isReadable(docDir)) {
-            System.out.println("Document directory '" +docDir.toAbsolutePath()+ "' does not exist or is not readable, please check the path");
+            System.out.println("Document directory '" + docDir.toAbsolutePath() + "' does not exist or is not readable, please check the path");
             System.exit(1);
         }
 
@@ -63,18 +65,33 @@ public class Indexer {
             System.out.println("Indexing to directory '" + indexPath + "'...");
 
             Directory dir = FSDirectory.open(Paths.get(indexPath));
-            Analyzer analyzer = new StandardAnalyzer();
+
+            //Analyzer analyzer = new SimpleAnalyzer();
+            //Analyzer analyzer = new WhitespaceAnalyzer();
+            //Analyzer analyzer = new StandardAnalyzer();
+            Analyzer analyzer = new EnglishAnalyzer();
+
             IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
+
+            //BM25 Similarity
             iwc.setSimilarity(new BM25Similarity());
 
-            iwc.setOpenMode(OpenMode.CREATE);
+            //Classic Similarity
+            //iwc.setSimilarity(new ClassicSimilarity());
 
-            // Optional: for better indexing performance, if you
-            // are indexing many documents, increase the RAM
-            // buffer.  But if you do this, increase the max heap
-            // size to the JVM (eg add -Xmx512m or -Xmx1g):
-            //
-            // iwc.setRAMBufferSizeMB(256.0);
+            //LMDirichletSimilarity
+            //iwc.setSimilarity(new LMDirichletSimilarity());
+
+            //Trying a multi similarity model
+            //iwc.setSimilarity(new MultiSimilarity(new Similarity[]{new BM25Similarity(),new ClassicSimilarity()}));
+
+            //Trying another multi similarity model
+            //iwc.setSimilarity(new MultiSimilarity(new Similarity[]{new BM25Similarity(),new LMDirichletSimilarity()}));
+
+            //Trying another multi similarity model
+            //iwc.setSimilarity(new MultiSimilarity(new Similarity[]{new ClassicSimilarity(),new LMDirichletSimilarity()}));
+
+            iwc.setOpenMode(OpenMode.CREATE);
 
             IndexWriter writer = new IndexWriter(dir, iwc);
             indexDoc(writer, docDir);
@@ -85,7 +102,7 @@ public class Indexer {
             // worth it when your index is relatively static (ie
             // you're done adding documents to it):
             //
-            //writer.forceMerge(1);
+            writer.forceMerge(1);
 
             writer.close();
 
@@ -97,21 +114,7 @@ public class Indexer {
         }
     }
 
-    /**
-     * Indexes the given file using the given writer, or if a directory is given,
-     * recurses over files and directories found under the given directory.
-     *
-     * NOTE: This method indexes one document per input file.  This is slow.  For good
-     * throughput, put multiple documents into your input file(s).  An example of this is
-     * in the benchmark module, which can create "line doc" files, one document per line,
-     * using the
-     * <a href="../../../../../contrib-benchmark/org/apache/lucene/benchmark/byTask/tasks/WriteLineDocTask.html"
-     * >WriteLineDocTask</a>.
-     *
-     * //@param writer Writer to the index where the given file/dir info will be stored
-     * //@param path The file to index, or the directory to recurse into to find files to index
-     * @throws IOException If there is a low-level I/O error
-     */
+
 
     /** Indexes a single document */
     static void indexDoc(IndexWriter writer, Path file) throws IOException {

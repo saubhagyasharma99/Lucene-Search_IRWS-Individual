@@ -14,8 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * The base source code was modified for my submission of the individual assignment
- * for the module 'Information Retrieval and Web Search (CS7IS3)' in Trinity College Dublin"
+ * The base source code from the Apache website was modified as part of my submission for
+ * the module 'Information Retrieval and Web Search (CS7IS3)' in Trinity College Dublin
  */
 
 import java.io.BufferedReader;
@@ -26,21 +26,22 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.io.PrintWriter;
 
-
-import org.apache.lucene.search.similarities.BM25Similarity;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.core.SimpleAnalyzer;
+import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.similarities.*;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 
 /** Simple command-line based search demo. */
 public class Searcher {
@@ -58,13 +59,33 @@ public class Searcher {
 
         IndexReader reader = DirectoryReader.open(FSDirectory.open(Paths.get(index)));
         IndexSearcher searcher = new IndexSearcher(reader);
-        Analyzer analyzer = new StandardAnalyzer();
+
+        //Analyzer analyzer = new SimpleAnalyzer();
+        //Analyzer analyzer = new WhitespaceAnalyzer();
+        //Analyzer analyzer = new StandardAnalyzer();
+        Analyzer analyzer = new EnglishAnalyzer();
 
         String results_path = "results.txt";
         PrintWriter writer = new PrintWriter(results_path, "UTF-8");
 
-        //BM25
+        //BM25 Similarity
         searcher.setSimilarity(new BM25Similarity());
+
+        //Classic Similarity
+        //searcher.setSimilarity(new ClassicSimilarity());
+
+        //LMDirichletSimilarity
+        //searcher.setSimilarity(new LMDirichletSimilarity());
+
+        //Trying a multi similarity model
+        //searcher.setSimilarity(new MultiSimilarity(new Similarity[]{new BM25Similarity(),new ClassicSimilarity()}));
+
+        //Trying another multi similarity model
+        //searcher.setSimilarity(new MultiSimilarity(new Similarity[]{new BM25Similarity(),new LMDirichletSimilarity()}));
+
+        //Trying another multi similarity model
+        //searcher.setSimilarity(new MultiSimilarity(new Similarity[]{new ClassicSimilarity(),new LMDirichletSimilarity()}));
+
 
         //---------------- Read in and parse queries ----------------
 
@@ -98,6 +119,7 @@ public class Searcher {
             performSearch(searcher, writer, Integer.parseInt(id), query);
         }
 
+        System.out.println("Results have been written to the 'results.txt' file.");
         writer.close();
         reader.close();
     }
@@ -117,7 +139,6 @@ public class Searcher {
              * (https://stackoverflow.com/questions/4275825/how-to-evaluate-a-search-retrieval-engine-using-trec-eval)
              */
             writer.println(queryNumber + " 0 " + doc.get("id") + " " + i + " " + hits[i].score + " EXP");
-            System.out.println(queryNumber + " 0 " + doc.get("id") + " " + i + " " + hits[i].score + " EXP");
         }
     }
 }
