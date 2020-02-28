@@ -119,9 +119,11 @@ public class Searcher {
     public static void performSearch(IndexSearcher searcher, PrintWriter writer, Integer queryNumber, Query query) throws IOException {
         /*
          * After a bit of analysis, I found that since the dataset is pretty small,
-         * the number of top hits can be kept at 1400 (which is the total no. of docs).
+         * the number of top hits can be kept at 1400 (which is the total no. of docs)
+         * but to be on the safe side, I left it at 999 to keep the efficiency high
+         * as per the documentation.
          */
-        TopDocs results = searcher.search(query, 1400);
+        TopDocs results = searcher.search(query, 999);
         ScoreDoc[] hits = results.scoreDocs;
 
         // To write the results for each hit in the format expected by the trec_eval tool.

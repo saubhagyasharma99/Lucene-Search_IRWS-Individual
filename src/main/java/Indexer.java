@@ -119,8 +119,8 @@ public class Indexer {
                 Document doc = new Document();
                 if(currentLine.startsWith(".I")){
                     /*
-                     * I think the ID of the document won't be useful, that is why I have
-                     * not analysed this field and stored it directly.
+                     * I think the ID of the document does not make sense to be analysed,
+                     * hence it is just directly stored without any analysis.
                      */
                     doc.add(new StringField("id", currentLine.substring(3), Field.Store.YES));
                     currentLine = bufferedReader.readLine();
