@@ -14,8 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * The base source code from the Apache website was modified as part of my submission for
- * the module 'Information Retrieval and Web Search (CS7IS3)' in Trinity College Dublin
+ * The base source code from the Lucene website was modified as part of my submission for
+ * the module 'Information Retrieval and Web Search (CS7IS3)' in Trinity College Dublin.
  */
 
 import java.io.BufferedReader;
@@ -93,12 +93,7 @@ public class Indexer {
             IndexWriter writer = new IndexWriter(dir, iwc);
             indexDoc(writer, docDir);
 
-            // NOTE: if you want to maximize search performance,
-            // you can optionally call forceMerge here.  This can be
-            // a terribly costly operation, so generally it's only
-            // worth it when your index is relatively static (ie
-            // you're done adding documents to it):
-            //
+            //Using writer.forceMerge to maximise search performance.
             writer.forceMerge(1);
 
             writer.close();
@@ -111,9 +106,7 @@ public class Indexer {
         }
     }
 
-
-
-    /** Indexes a single document */
+    /** Indexes the 'cran.all.1400' file */
     static void indexDoc(IndexWriter writer, Path file) throws IOException {
         try (InputStream stream = Files.newInputStream(file)) {
 
@@ -123,11 +116,14 @@ public class Indexer {
 
             String currentLine = bufferedReader.readLine();
             String fullText = "";
-            int i=1;
 
             while(currentLine != null){
                 Document doc = new Document();
                 if(currentLine.startsWith(".I")){
+                    /*
+                     * I think the ID of the document won't be useful, that is why I have
+                     * not analysed this field and stored it directly.
+                     */
                     doc.add(new StringField("id", currentLine.substring(3), Field.Store.YES));
                     currentLine = bufferedReader.readLine();
                 }
@@ -155,6 +151,10 @@ public class Indexer {
                         fullText += currentLine + " ";
                         currentLine = bufferedReader.readLine();
                     }
+                    /*
+                     * After a bit of analysis, it was found that for this dataset, analysing
+                     * and storing bibliography details proved to be slightly inefficient.
+                     */
                     doc.add(new StringField("bibliography", fullText, Field.Store.YES));
                     fullText = "";
                 }
@@ -164,6 +164,7 @@ public class Indexer {
                         fullText += currentLine + " ";
                         currentLine = bufferedReader.readLine();
                     }
+                    //Not storing the words in an attempt to save space.
                     doc.add(new TextField("words", fullText, Field.Store.NO));
                     fullText = "";
                 }

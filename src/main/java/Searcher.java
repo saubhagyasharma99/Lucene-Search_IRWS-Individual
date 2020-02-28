@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  * The base source code from the Apache website was modified as part of my submission for
- * the module 'Information Retrieval and Web Search (CS7IS3)' in Trinity College Dublin
+ * the module 'Information Retrieval and Web Search (CS7IS3)' in Trinity College Dublin.
  */
 
 import java.io.BufferedReader;
@@ -49,9 +49,6 @@ public class Searcher {
     private Searcher() {
     }
 
-    /**
-     * Simple command-line based search demo.
-     */
     public static void main(String[] args) throws Exception {
 
         String index = "index";
@@ -85,9 +82,6 @@ public class Searcher {
 
         //Trying another multi similarity model
         //searcher.setSimilarity(new MultiSimilarity(new Similarity[]{new ClassicSimilarity(),new LMDirichletSimilarity()}));
-
-
-        //---------------- Read in and parse queries ----------------
 
         String queriesPath = "cran/cran.qry";
         BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(queriesPath), StandardCharsets.UTF_8);
@@ -127,17 +121,16 @@ public class Searcher {
 
     // Performs search and writes results to the writer
     public static void performSearch(IndexSearcher searcher, PrintWriter writer, Integer queryNumber, Query query) throws IOException {
+        /*
+         * After a bit of analysis, I found that since the dataset is pretty small,
+         * the number of top hits can be kept at 1400 (which is the total no. of docs).
+         */
         TopDocs results = searcher.search(query, 1400);
         ScoreDoc[] hits = results.scoreDocs;
 
-        // Write the results for each hit
+        // To write the results for each hit in the format expected by the trec_eval tool.
         for (int i = 0; i < hits.length; i++) {
             Document doc = searcher.doc(hits[i].doc);
-            /*
-             * Write the results in the format expected by trec_eval:
-             * | Query Number | 0 | Document ID | Rank | Score | "EXP" |
-             * (https://stackoverflow.com/questions/4275825/how-to-evaluate-a-search-retrieval-engine-using-trec-eval)
-             */
             writer.println(queryNumber + " 0 " + doc.get("id") + " " + i + " " + hits[i].score + " KAVITH");
         }
     }
