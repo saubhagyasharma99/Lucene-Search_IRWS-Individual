@@ -20,7 +20,6 @@
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -46,10 +45,7 @@ import org.apache.lucene.store.FSDirectory;
 /** Simple command-line based search demo. */
 public class Searcher {
 
-    private Searcher() {
-    }
-
-    public static void main(String[] args) throws Exception {
+    public void searchMethod() throws Exception {
 
         String index = "index";
         String queryString = "";

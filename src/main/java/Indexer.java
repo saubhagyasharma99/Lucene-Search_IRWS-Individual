@@ -43,10 +43,8 @@ import org.apache.lucene.store.FSDirectory;
 
 public class Indexer {
 
-    private Indexer() {}
-
     /** Index all text files under a directory. */
-    public static void main(String[] args) {
+    public void indexMethod() {
         String indexPath = "index";
         String docsPath = "cran/cran.all.1400";
 
@@ -152,7 +150,7 @@ public class Indexer {
                         currentLine = bufferedReader.readLine();
                     }
                     /*
-                     * After a bit of analysis, it was found that for this dataset, analysing
+                     * After a bit of analysis, I found that for this dataset, analysing
                      * and storing bibliography details proved to be slightly inefficient.
                      */
                     doc.add(new StringField("bibliography", fullText, Field.Store.YES));
@@ -164,7 +162,7 @@ public class Indexer {
                         fullText += currentLine + " ";
                         currentLine = bufferedReader.readLine();
                     }
-                    //Not storing the words in an attempt to save space.
+                    //Not storing the words in an attempt to save storage space.
                     doc.add(new TextField("words", fullText, Field.Store.NO));
                     fullText = "";
                 }
