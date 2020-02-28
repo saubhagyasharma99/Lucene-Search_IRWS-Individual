@@ -33,10 +33,7 @@ import org.apache.lucene.analysis.core.SimpleAnalyzer;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.TextField;
+import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -158,7 +155,7 @@ public class Indexer {
                         fullText += currentLine + " ";
                         currentLine = bufferedReader.readLine();
                     }
-                    doc.add(new TextField("bibliography", fullText, Field.Store.YES));
+                    doc.add(new StringField("bibliography", fullText, Field.Store.YES));
                     fullText = "";
                 }
                 if (currentLine.startsWith(".W")){
@@ -167,7 +164,7 @@ public class Indexer {
                         fullText += currentLine + " ";
                         currentLine = bufferedReader.readLine();
                     }
-                    doc.add(new TextField("words", fullText, Field.Store.YES));
+                    doc.add(new TextField("words", fullText, Field.Store.NO));
                     fullText = "";
                 }
                 writer.addDocument(doc);

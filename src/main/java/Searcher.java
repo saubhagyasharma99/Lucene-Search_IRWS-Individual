@@ -138,7 +138,7 @@ public class Searcher {
              * | Query Number | 0 | Document ID | Rank | Score | "EXP" |
              * (https://stackoverflow.com/questions/4275825/how-to-evaluate-a-search-retrieval-engine-using-trec-eval)
              */
-            writer.println(queryNumber + " 0 " + doc.get("id") + " " + i + " " + hits[i].score + " EXP");
+            writer.println(queryNumber + " 0 " + doc.get("id") + " " + i + " " + hits[i].score + " KAVITH");
         }
     }
 }
